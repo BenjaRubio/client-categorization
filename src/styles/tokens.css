@@ -1,0 +1,33 @@
+:root {
+  /* Colors */
+  --background: #0a0a0c;
+  --foreground: #f0f0f5;
+  --card: #141418;
+  --card-foreground: #f0f0f5;
+  --popover: #0a0a0c;
+  --popover-foreground: #f0f0f5;
+  --primary: #6366f1;
+  --primary-foreground: #ffffff;
+  --secondary: #27272a;
+  --secondary-foreground: #f0f0f5;
+  --muted: #27272a;
+  --muted-foreground: #a1a1aa;
+  --accent: #6366f1;
+  --accent-foreground: #ffffff;
+  --destructive: #ef4444;
+  --destructive-foreground: #ffffff;
+  --border: #27272a;
+  --input: #1e1e22;
+  --ring: #6366f1;
+
+  /* Shared Misc */
+  --radius: 0.75rem;
+  --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+  --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+  --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+  --shadow-primary: 0 10px 15px -3px rgba(99, 102, 241, 0.2);
+
+  /* Fonts */
+  --font-body: var(--font-inter), system-ui, -apple-system, sans-serif;
+  --font-heading: var(--font-outfit), sans-serif;
+}

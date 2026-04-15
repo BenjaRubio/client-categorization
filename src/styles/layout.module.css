@@ -1,0 +1,33 @@
+.nav {
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  padding: 1rem 2rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.navLinks {
+  display: flex;
+  gap: 2rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--muted-foreground);
+}
+
+.navLink:hover {
+  color: var(--foreground);
+  transition: color 0.2s ease;
+}
+
+.main {
+  min-height: 100vh;
+  padding: 2rem;
+}
+
+@media (min-width: 1024px) {
+  .main {
+    padding: 2rem 4rem;
+  }
+}
