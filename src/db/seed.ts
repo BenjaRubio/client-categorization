@@ -8,7 +8,7 @@ const prisma = new PrismaClient()
 async function main() {
   console.log('Starting seed process...')
 
-  const csvFilePath = path.join(process.cwd(), 'src/data/seed.csv')
+  const csvFilePath = path.join(process.cwd(), 'src/data/vambe_clients.csv')
 
   if (!fs.existsSync(csvFilePath)) {
     console.warn(`Seed file not found at ${csvFilePath}. Skipping...`)

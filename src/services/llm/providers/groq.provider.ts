@@ -1,30 +1,51 @@
+import OpenAI from 'openai';
 import { LLMProvider, LLMRequest, LLMResponse } from '../types';
+
+const MODEL = 'llama-3.1-8b-instant';
+const API_KEY = process.env.GROQ_API_KEY;
 
 export class GroqProvider implements LLMProvider {
   name = 'Groq';
+  private client: OpenAI | null = null;
 
   isAvailable(): boolean {
-    return !!process.env.GROQ_API_KEY;
+    return !!API_KEY;
+  }
+
+  private getClient(): OpenAI {
+    if (!this.client) {
+      this.client = new OpenAI({
+        apiKey: API_KEY,
+        baseURL: 'https://api.groq.com/openai/v1',
+      });
+    }
+    return this.client;
   }
 
   async call(request: LLMRequest): Promise<LLMResponse> {
-    if (!this.isAvailable()) {
-      throw new Error('Groq API key not found');
+    const completion = await this.getClient().chat.completions.create({
+      model: MODEL,
+      messages: request.messages,
+      temperature: request.temperature ?? 0.3,
+      max_tokens: request.maxTokens,
+    });
+
+    const choice = completion.choices[0];
+    if (!choice?.message?.content) {
+      throw new Error('Groq returned an empty response');
     }
 
-    // Actual implementation with fetch would go here
-    console.log('Groq: Processing request...', request.prompt);
-
-    // Simulate API call
     return {
-      text: `[Groq Stub] Response to: ${request.prompt}`,
+      text: choice.message.content,
       provider: this.name,
-      model: 'mixtral-8x7b-32768',
-      usage: {
-        promptTokens: 15,
-        completionTokens: 25,
-        totalTokens: 40
-      }
+      model: completion.model,
+      usage: completion.usage
+        ? {
+            promptTokens: completion.usage.prompt_tokens,
+            completionTokens: completion.usage.completion_tokens,
+            totalTokens: completion.usage.total_tokens,
+          }
+        : undefined,
     };
   }
 }

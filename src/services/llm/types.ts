@@ -1,6 +1,10 @@
+export interface LLMMessage {
+  role: 'system' | 'user' | 'assistant';
+  content: string;
+}
+
 export interface LLMRequest {
-  prompt: string;
-  systemMessage?: string;
+  messages: LLMMessage[];
   temperature?: number;
   maxTokens?: number;
 }

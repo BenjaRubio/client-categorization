@@ -1,7 +1,7 @@
 import { LLMProvider, LLMRequest, LLMResponse } from './types';
 import { OpenAIProvider } from './providers/openai.provider';
 import { GroqProvider } from './providers/groq.provider';
-import { AnthropicProvider } from './providers/anthropic.provider';
+import { GeminiProvider } from './providers/gemini.provider';
 
 export class LLMRegistry {
   private providers: LLMProvider[] = [];
@@ -31,7 +31,6 @@ export class LLMRegistry {
 
 export const registry = new LLMRegistry();
 
-// Auto-register initial providers
 registry.register(new OpenAIProvider());
-registry.register(new AnthropicProvider());
+registry.register(new GeminiProvider());
 registry.register(new GroqProvider());
