@@ -88,19 +88,23 @@ enum Urgency {
 enum Industry {
   FINANCE                 @map("finance")
   HEALTHCARE              @map("healthcare")
-  ECOMMERCE_RETAIL        @map("ecommerce_retail")
+  ECOMMERCE_AND_RETAIL    @map("ecommerce_and_retail")
   EDUCATION               @map("education")
   LOGISTICS               @map("logistics")
   REAL_ESTATE             @map("real_estate")
   LEGAL                   @map("legal")
-  HOSPITALITY_TOURISM     @map("hospitality_tourism")
+  HOSPITALITY_AND_TOURISM @map("hospitality_and_tourism")
   TELECOMMUNICATIONS      @map("telecommunications")
   GASTRONOMY              @map("gastronomy")
   AUTOMOTIVE              @map("automotive")
   AGRICULTURE             @map("agriculture")
   PROFESSIONAL_SERVICES   @map("professional_services")
-  ENTERTAINMENT           @map("entertainment")
+  MEDIA_AND_ENTERTAINMENT @map("media_and_entertainment")
   NON_PROFIT              @map("non_profit")
+  TECHNOLOGY              @map("technology")
+  ENERGY                  @map("energy")
+  CONSTRUCTION            @map("construction")
+  ART_AND_DESIGN          @map("art_and_design")
 }
 
 model MeetingCategory {

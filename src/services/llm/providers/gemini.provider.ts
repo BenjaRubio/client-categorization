@@ -1,7 +1,7 @@
 import { GoogleGenAI } from '@google/genai';
 import { LLMProvider, LLMRequest, LLMResponse } from '../types';
 
-const MODEL = 'gemini-3.0-flash';
+const MODEL = 'gemini-3-flash-preview';
 const API_KEY = process.env.GEMINI_API_KEY;
 
 export class GeminiProvider implements LLMProvider {
@@ -30,8 +30,13 @@ export class GeminiProvider implements LLMProvider {
       contents: userMessages,
       config: {
         temperature: request.temperature ?? 0.3,
-        maxOutputTokens: request.maxTokens,
+        ...(request.responseFormat !== 'json' && request.maxTokens && {
+          maxOutputTokens: request.maxTokens,
+        }),
         ...(systemMsg && { systemInstruction: systemMsg.content }),
+        ...(request.responseFormat === 'json' && {
+          responseMimeType: 'application/json',
+        }),
       },
     });
 

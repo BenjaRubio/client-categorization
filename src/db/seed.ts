@@ -1,45 +1,45 @@
-import { PrismaClient } from '@prisma/client'
-import fs from 'fs'
-import path from 'path'
-import Papa from 'papaparse'
-
-const prisma = new PrismaClient()
+import prisma from '@/db/prisma';
+import fs from 'fs';
+import path from 'path';
+import Papa from 'papaparse';
+import { CsvRow, processRow } from '@/services/seed.service';
 
 async function main() {
-  console.log('Starting seed process...')
+  console.log('Starting seed process...\n');
 
-  const csvFilePath = path.join(process.cwd(), 'src/data/vambe_clients.csv')
+  const csvFilePath = path.join(process.cwd(), 'src/data/vambe_clients.csv');
 
   if (!fs.existsSync(csvFilePath)) {
-    console.warn(`Seed file not found at ${csvFilePath}. Skipping...`)
-    return
+    console.warn(`Seed file not found at ${csvFilePath}. Skipping...`);
+    return;
   }
 
-  const fileContent = fs.readFileSync(csvFilePath, 'utf8')
-
-  Papa.parse(fileContent, {
+  const fileContent = fs.readFileSync(csvFilePath, 'utf8');
+  const { data, errors } = Papa.parse<CsvRow>(fileContent, {
     header: true,
     skipEmptyLines: true,
-    complete: async (results) => {
-      console.log(`Parsed ${results.data.length} rows from CSV.`)
+  });
 
-      // Bulk insert/upsert logic will go here once tables are defined
-      // For now, logging the data
-      console.log('CSV Data sample:', results.data.slice(0, 2))
+  if (errors.length > 0) {
+    console.error('CSV parse errors:', errors);
+    return;
+  }
 
-      console.log('Seed process finished successfully.')
-    },
-    error: (error: any) => {
-      console.error('Error parsing CSV:', error)
-    }
-  })
+  console.log(`Parsed ${data.length} rows from CSV.`);
+
+  for (let i = 0; i < data.length; i++) {
+    await processRow(data[i], i);
+    await new Promise((resolve) => setTimeout(resolve, 10000));
+  }
+
+  console.log('\n✓ Seed process finished.');
 }
 
 main()
   .catch((e) => {
-    console.error(e)
-    process.exit(1)
+    console.error(e);
+    process.exit(1);
   })
   .finally(async () => {
-    await prisma.$disconnect()
-  })
+    await prisma.$disconnect();
+  });

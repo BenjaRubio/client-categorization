@@ -7,12 +7,12 @@ const PROMPTS_DIR = path.join(process.cwd(), 'src/services/llm/prompts');
 export class PromptTemplate {
   private systemContent: string;
   private userTemplate: string;
-  private defaults: Pick<LLMRequest, 'temperature' | 'maxTokens'>;
+  private defaults: Pick<LLMRequest, 'temperature' | 'maxTokens' | 'responseFormat'>;
 
   private constructor(
     system: string,
     user: string,
-    defaults: Pick<LLMRequest, 'temperature' | 'maxTokens'>
+    defaults: Pick<LLMRequest, 'temperature' | 'maxTokens' | 'responseFormat'>
   ) {
     this.systemContent = system;
     this.userTemplate = user;
@@ -56,12 +56,12 @@ export class PromptTemplate {
   }
 
   private static parse(raw: string): {
-    defaults: Pick<LLMRequest, 'temperature' | 'maxTokens'>;
+    defaults: Pick<LLMRequest, 'temperature' | 'maxTokens' | 'responseFormat'>;
     system: string;
     user: string;
   } {
     let content = raw;
-    let defaults: Pick<LLMRequest, 'temperature' | 'maxTokens'> = {};
+    let defaults: Pick<LLMRequest, 'temperature' | 'maxTokens' | 'responseFormat'> = {};
 
     const frontmatterMatch = raw.match(/^---\s*\n([\s\S]*?)\n---\s*\n/);
     if (frontmatterMatch) {
@@ -70,9 +70,9 @@ export class PromptTemplate {
     }
 
     const systemMatch = content.match(
-      /^#\s+System\s*\n([\s\S]*?)(?=\n#\s+User\s*\n|$)/im
+      /#\s+System\s*\n([\s\S]*?)(?=\n#\s+User)/i
     );
-    const userMatch = content.match(/^#\s+User\s*\n([\s\S]*?)$/im);
+    const userMatch = content.match(/#\s+User\s*\n([\s\S]*)/i);
 
     if (!systemMatch || !userMatch) {
       throw new Error(
@@ -89,8 +89,8 @@ export class PromptTemplate {
 
   private static parseFrontmatter(
     raw: string
-  ): Pick<LLMRequest, 'temperature' | 'maxTokens'> {
-    const defaults: Pick<LLMRequest, 'temperature' | 'maxTokens'> = {};
+  ): Pick<LLMRequest, 'temperature' | 'maxTokens' | 'responseFormat'> {
+    const defaults: Pick<LLMRequest, 'temperature' | 'maxTokens' | 'responseFormat'> = {};
 
     for (const line of raw.split('\n')) {
       const trimmed = line.trim();
@@ -104,8 +104,34 @@ export class PromptTemplate {
 
       if (key === 'temperature') defaults.temperature = parseFloat(value);
       if (key === 'max_tokens') defaults.maxTokens = parseInt(value, 10);
+      if (key === 'response_format' && (value === 'json' || value === 'text')) {
+        defaults.responseFormat = value;
+      }
     }
 
     return defaults;
   }
+}
+
+// Debug: run directly with `npx tsx src/services/llm/prompt-template.ts [template-name]`
+if (process.argv[1]?.endsWith('prompt-template.ts')) {
+  const name = process.argv[2] || 'classify-meeting';
+  const template = PromptTemplate.load(name);
+
+  const request = template.render({
+    clientName: 'Test Client',
+    meetingDate: '2024-01-15',
+    transcription: 'This is a sample transcription for debugging the template.',
+  });
+
+  console.log('=== LLMRequest ===\n');
+  console.log('Config:', {
+    temperature: request.temperature,
+    maxTokens: request.maxTokens,
+    responseFormat: request.responseFormat,
+  });
+  console.log('\n--- SYSTEM MESSAGE ---\n');
+  console.log(request.messages[0].content);
+  console.log('\n--- USER MESSAGE ---\n');
+  console.log(request.messages[1].content);
 }

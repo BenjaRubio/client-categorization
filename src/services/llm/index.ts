@@ -1,8 +1,11 @@
 import { LLMRequest, LLMResponse } from './types';
-import { registry } from './registry';
+import { ResponseValidator, registry } from './registry';
 
-export const callLLM = (request: LLMRequest): Promise<LLMResponse> => {
-  return registry.callWithFallback(request);
+export const callLLM = (
+  request: LLMRequest,
+  validate?: ResponseValidator
+): Promise<LLMResponse> => {
+  return registry.callWithFallback(request, validate);
 };
 
 export { PromptTemplate } from './prompt-template';
