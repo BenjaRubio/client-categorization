@@ -1,9 +1,3 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
-
 generator client {
   provider = "prisma-client-js"
 }
@@ -13,20 +7,113 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-// Placeholder model to allow initial migration
 model Client {
-  id        String   @id @default(cuid())
-  name      String
-  email     String?
-  category  String?
-  metadata  Json?
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  id           String         @id @default(cuid())
+  name         String
+  email        String
+  phoneNumber  String         @map("phone_number")
+  salesMeetings SalesMeeting[]
+
+  @@map("clients")
 }
 
-model Log {
-  id        String   @id @default(cuid())
-  message   String
-  level     String   @default("INFO")
-  createdAt DateTime @default(now())
+model Salesman {
+  id            String         @id @default(cuid())
+  name          String
+  salesMeetings SalesMeeting[]
+
+  @@map("salesmen")
+}
+
+model SalesMeeting {
+  id              String            @id @default(cuid())
+  clientId        String            @map("client_id")
+  salesmanId      String            @map("salesman_id")
+  date            DateTime          @db.Date
+  closed          Boolean           @default(false)
+  transcription   String            @db.Text
+  client          Client            @relation(fields: [clientId], references: [id], onDelete: Cascade)
+  salesman        Salesman          @relation(fields: [salesmanId], references: [id], onDelete: Cascade)
+  meetingCategory MeetingCategory?
+
+  @@map("sales_meetings")
+}
+
+enum WeeklyVolume {
+  RANGE_0_100        @map("0-100")
+  RANGE_101_500      @map("101-500")
+  RANGE_501_2000     @map("501-2000")
+  RANGE_2000_PLUS    @map("2000+")
+  UNDEFINED          @map("undefined")
+}
+
+enum UseCase {
+  CUSTOMER_SERVICE   @map("customer_service")
+  SCHEDULING         @map("scheduling")
+  TECHNICAL_SUPPORT  @map("technical_support")
+  ADS                @map("ads")
+  OTHER              @map("other")
+}
+
+enum AwarenessChannel {
+  INTERNET_SEARCH    @map("internet_search")
+  NETWORKING         @map("networking")
+  FAMILY_FRIEND      @map("family_friend")
+  SOCIAL_NETWORK_ADS @map("social_networks_ads")
+  WEBINARS_TALKS     @map("webinars_talks")
+  FAIR               @map("fair")
+  LINKEDIN           @map("linkedin")
+  PODCASTS           @map("podcasts")
+  OTHER              @map("other")
+}
+
+enum Seasonality {
+  CONSTANT           @map("constant")
+  SEASONAL           @map("seasonal")
+  UNDEFINED          @map("undefined")
+}
+
+enum IntegrationLevel {
+  LOW                @map("low")
+  MEDIUM             @map("medium")
+  HIGH               @map("high")
+}
+
+enum Urgency {
+  LOW                @map("low")
+  MEDIUM             @map("medium")
+  HIGH               @map("high")
+}
+
+enum Industry {
+  FINANCE                 @map("finance")
+  HEALTHCARE              @map("healthcare")
+  ECOMMERCE_RETAIL        @map("ecommerce_retail")
+  EDUCATION               @map("education")
+  LOGISTICS               @map("logistics")
+  REAL_ESTATE             @map("real_estate")
+  LEGAL                   @map("legal")
+  HOSPITALITY_TOURISM     @map("hospitality_tourism")
+  TELECOMMUNICATIONS      @map("telecommunications")
+  GASTRONOMY              @map("gastronomy")
+  AUTOMOTIVE              @map("automotive")
+  AGRICULTURE             @map("agriculture")
+  PROFESSIONAL_SERVICES   @map("professional_services")
+  ENTERTAINMENT           @map("entertainment")
+  NON_PROFIT              @map("non_profit")
+}
+
+model MeetingCategory {
+  id               String           @id @default(cuid())
+  salesMeetingId   String           @unique @map("sales_meeting_id")
+  weeklyVolume     WeeklyVolume     @map("weekly_volume")
+  useCase          UseCase          @map("use_case")
+  industry         Industry
+  awarenessChannel AwarenessChannel @map("awareness_channel")
+  seasonality      Seasonality
+  integrationLevel IntegrationLevel @map("integration_level")
+  urgency          Urgency
+  salesMeeting     SalesMeeting     @relation(fields: [salesMeetingId], references: [id], onDelete: Cascade)
+
+  @@map("meeting_categories")
 }
