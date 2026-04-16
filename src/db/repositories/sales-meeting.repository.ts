@@ -1,4 +1,4 @@
-import prisma from '@/db/prisma';
+import prisma from '@/db/prisma-client';
 import { SalesMeeting } from '@prisma/client';
 
 export async function create(data: {

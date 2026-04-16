@@ -13,13 +13,12 @@ This skill defines folder structure and naming conventions for the client-catego
 src/
 ├── app/          # Next.js App Router — pages, layouts, co-located page logic
 ├── services/     # Business logic decoupled from Next.js (seeding, LLM, etc.)
-├── db/           # Database configuration (Prisma client singleton)
+├── db/           # Database: Prisma client, schema, migrations, repositories, seed data
 ├── ui/           # Atomic reusable UI elements (Button, Card, Input, etc.)
-├── types/        # Shared TypeScript interfaces and types
-└── data/         # Static data files (CSVs for seeding)
+└── types/        # Shared TypeScript interfaces and types
 ```
 
-The Prisma schema lives at `prisma/schema.prisma` (project root).
+The Prisma schema lives at `src/db/prisma/schema.prisma` (configured via `prisma.schema` in `package.json`).
 
 ## `/app` — Page Co-location Pattern
 
@@ -84,8 +83,19 @@ To add a new LLM provider: create a file in `providers/`, implement `LLMProvider
 
 ```
 db/
-├── prisma.ts             # Prisma client singleton (globalThis guard for dev)
-└── seed.ts               # Seed script (run via `npx prisma db seed`)
+├── prisma-client.ts      # Prisma client singleton (globalThis guard for dev)
+├── seed.ts               # Seed script (run via `npx prisma db seed`)
+├── data/                 # Static data files (CSVs for seeding)
+│   └── vambe_clients.csv
+├── prisma/               # Prisma schema + migrations
+│   ├── schema.prisma
+│   └── migrations/
+└── repositories/         # Data-access layer (one file per entity)
+    ├── index.ts
+    ├── client.repository.ts
+    ├── salesman.repository.ts
+    ├── sales-meeting.repository.ts
+    └── meeting-category.repository.ts
 ```
 
 ## `/ui` — Atomic UI Components
@@ -140,4 +150,4 @@ types/
 }
 ```
 
-Usage: `import { Button } from "@/ui/Button"`, `import { prisma } from "@/db/prisma"`, `import { callLLM } from "@/services/llm"`.
+Usage: `import { Button } from "@/ui/Button"`, `import prisma from "@/db/prisma-client"`, `import { callLLM } from "@/services/llm"`.

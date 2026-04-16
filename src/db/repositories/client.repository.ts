@@ -1,4 +1,4 @@
-import prisma from '@/db/prisma';
+import prisma from '@/db/prisma-client';
 import { Client } from '@prisma/client';
 
 export async function findByEmail(email: string): Promise<Client | null> {

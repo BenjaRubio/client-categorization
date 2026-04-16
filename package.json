@@ -35,6 +35,7 @@
     "typescript": "^5"
   },
   "prisma": {
+    "schema": "src/db/prisma/schema.prisma",
     "seed": "tsx src/db/seed.ts"
   }
 }

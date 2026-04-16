@@ -1,4 +1,4 @@
-import prisma from '@/db/prisma';
+import prisma from '@/db/prisma-client';
 import { Salesman } from '@prisma/client';
 
 export async function findByName(name: string): Promise<Salesman | null> {

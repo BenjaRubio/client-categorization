@@ -1,4 +1,4 @@
-import prisma from '@/db/prisma';
+import prisma from '@/db/prisma-client';
 import { salesMeetingRepository } from '@/db/repositories';
 import { classifyMeeting } from './classify-meeting';
 

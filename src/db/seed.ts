@@ -1,4 +1,4 @@
-import prisma from '@/db/prisma';
+import prisma from '@/db/prisma-client';
 import fs from 'fs';
 import path from 'path';
 import Papa from 'papaparse';
@@ -7,7 +7,7 @@ import { CsvRow, processRow } from '@/services/seed.service';
 async function main() {
   console.log('Starting seed process...\n');
 
-  const csvFilePath = path.join(process.cwd(), 'src/data/vambe_clients.csv');
+  const csvFilePath = path.join(process.cwd(), 'src/db/data/vambe_clients.csv');
 
   if (!fs.existsSync(csvFilePath)) {
     console.warn(`Seed file not found at ${csvFilePath}. Skipping...`);

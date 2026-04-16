@@ -22,7 +22,9 @@ Next.js 16 App Router project (React 19) for categorizing clients using LLM prov
 - **Page co-location**: Every page directory has `_components/`, `_fetchers/` (server-only reads), and `_actions/` (server actions for writes). See `.claude/skills/file-structure/SKILL.md` for the full convention.
 - **Services layer** (`src/services/`): Business logic decoupled from Next.js. Never imported directly from page components — accessed through `_fetchers` and `_actions`.
 - **LLM registry** (`src/services/llm/`): Multi-provider system with automatic fallback. Providers registered in `registry.ts` (OpenAI -> Anthropic -> Groq). Add new providers by implementing `LLMProvider` interface in `providers/`.
-- **DB singleton** (`src/db/prisma.ts`): Uses `globalThis` pattern to prevent hot-reload connection exhaustion.
+- **DB singleton** (`src/db/prisma-client.ts`): Uses `globalThis` pattern to prevent hot-reload connection exhaustion.
+- **Prisma schema** lives at `src/db/prisma/schema.prisma` (configured via `package.json` `prisma.schema`).
+- **Seed data** (`src/db/data/`): Static CSV files used for database seeding.
 - **UI components** (`src/ui/`): Atomic reusable elements with barrel export. Import via `@/ui` or `@/ui/ComponentName`.
 - **Styling**: Vanilla CSS Modules (no Tailwind). Design tokens in `src/styles/tokens.css`, base styles in `src/styles/base.css`.
 - **Import alias**: All imports use `@/*` mapped to `./src/*`.
