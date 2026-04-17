@@ -7,6 +7,20 @@ description: File structure conventions for the Next.js client-categorization ap
 
 This skill defines folder structure and naming conventions for the client-categorization Next.js project. All source code lives under `src/`.
 
+## Naming Conventions
+
+All files use **kebab-case**:
+
+- Components: `meetings-table.tsx`, `classify-button.tsx`, `pie-chart.tsx`
+- Fetchers: `get-meetings.fetcher.ts`, `get-filter-options.fetcher.ts`
+- Actions: `classify-meeting.action.ts`, `create-meeting.action.ts`
+- UI atoms: `button.tsx`, `table.tsx`, `select.tsx`
+- CSS Modules: `button.module.css`, `table.module.css`
+- Services: `seed.service.ts`, `classify-meeting.ts`
+- Repositories: `client.repository.ts`, `sales-meeting.repository.ts`
+
+`page.tsx` and `layout.tsx` are **always server components**. All client interactivity lives in `_components/`.
+
 ## Top-Level Layout
 
 ```
@@ -41,24 +55,26 @@ Every folder that contains a `page.tsx` MUST also have these **private folders**
 
 ```
 app/
-├── layout.tsx            # Root layout with Navbar
-├── page.tsx              # Home page
+├── layout.tsx                    # Root layout with Navbar (server component)
+├── page.tsx                      # Home page (server component)
 ├── globals.css
-├── _components/
-│   └── HeroSection.tsx
-├── _fetchers/
-│   └── getOverview.ts
-├── _actions/
-├── dashboard/
+├── ventas/
+│   ├── page.tsx                  # Server component — fetches then renders _components
+│   ├── _components/
+│   │   ├── meetings-table.tsx
+│   │   └── classify-button.tsx
+│   ├── _fetchers/
+│   │   ├── get-meetings.fetcher.ts
+│   │   └── get-filter-options.fetcher.ts
+│   └── _actions/
+│       └── classify-meeting.action.ts
+├── metricas/
 │   ├── page.tsx
 │   ├── _components/
-│   │   ├── MetricsChart.tsx
-│   │   └── FilterPanel.tsx
-│   ├── _fetchers/
-│   │   ├── getChartData.ts
-│   │   └── getSummaryMetrics.ts
-│   └── _actions/
-│       └── updatePreferences.ts
+│   │   ├── metrics-dashboard.tsx
+│   │   └── salesmen-bar-chart.tsx
+│   └── _fetchers/
+│       └── get-metrics-data.fetcher.ts
 ```
 
 ## `/services` — Business Logic
@@ -100,15 +116,26 @@ db/
 
 ## `/ui` — Atomic UI Components
 
-Design-system-level, reusable elements. Import via `@/ui/Button` — never relative paths like `../../../ui`.
+Design-system-level, reusable elements. Import via `@/ui` barrel — never relative paths like `../../../ui`.
 
 ```
 ui/
 ├── styles/               # Component-specific CSS Modules
-│   ├── Button.module.css
-│   └── Card.module.css
-├── Button.tsx
-├── Card.tsx
+│   ├── button.module.css
+│   ├── card.module.css
+│   ├── table.module.css
+│   └── ...
+├── button.tsx
+├── card.tsx
+├── table.tsx
+├── select.tsx
+├── checkbox.tsx
+├── input.tsx
+├── text-area.tsx
+├── badge.tsx
+├── pie-chart.tsx         # "use client" — recharts wrapper
+├── bar-chart.tsx         # "use client" — recharts wrapper
+├── scatter-chart.tsx     # "use client" — recharts wrapper
 ├── index.ts              # Barrel export
 ```
 
@@ -150,4 +177,11 @@ types/
 }
 ```
 
-Usage: `import { Button } from "@/ui/Button"`, `import prisma from "@/db/prisma-client"`, `import { callLLM } from "@/services/llm"`.
+Usage: `import { Button, Table, PieChart } from "@/ui"`, `import prisma from "@/db/prisma-client"`, `import { callLLM } from "@/services/llm"`.
+
+## `/lib` — Shared Utilities
+
+```
+lib/
+└── enum-labels.ts        # Spanish display labels for all Prisma enums
+```
