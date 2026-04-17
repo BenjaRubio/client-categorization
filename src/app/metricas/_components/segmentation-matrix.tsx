@@ -1,3 +1,4 @@
+import { IntegrationLevel, Urgency } from '@prisma/client';
 import { ScatterChart } from '@/ui';
 import { INTEGRATION_LEVEL_LABELS, SEASONALITY_LABELS, URGENCY_LABELS, WEEKLY_VOLUME_LABELS } from '@/lib/enum-labels';
 import type { MetricsMeetingRow } from './metrics-dashboard';
@@ -7,14 +8,23 @@ interface SegmentationMatrixProps {
   meetings: MetricsMeetingRow[];
 }
 
-const INTEGRATION_TO_AXIS = { LOW: 1, MEDIUM: 2, HIGH: 3 } as const;
-const URGENCY_TO_AXIS = { LOW: 1, MEDIUM: 2, HIGH: 3 } as const;
+const INTEGRATION_TO_AXIS: Record<IntegrationLevel, number> = {
+  [IntegrationLevel.LOW]: 1,
+  [IntegrationLevel.MEDIUM]: 2,
+  [IntegrationLevel.HIGH]: 3,
+};
+
+const URGENCY_TO_AXIS: Record<Urgency, number> = {
+  [Urgency.LOW]: 1,
+  [Urgency.MEDIUM]: 2,
+  [Urgency.HIGH]: 3,
+};
 const WEEKLY_VOLUME_TO_SIZE = {
   RANGE_0_100: 90,
   RANGE_101_500: 150,
   RANGE_501_2000: 230,
   RANGE_2000_PLUS: 320,
-  UNDEFINED: 70,
+  UNDEFINED: 50,
 } as const;
 const SEASONALITY_TO_COLOR = {
   CONSTANT: '#60a5fa',
@@ -22,11 +32,12 @@ const SEASONALITY_TO_COLOR = {
   UNDEFINED: '#94a3b8',
 } as const;
 
-function getQuadrantTag(integration: 'LOW' | 'MEDIUM' | 'HIGH', urgency: 'LOW' | 'MEDIUM' | 'HIGH') {
-  const hard = integration === 'HIGH';
-  const urgent = urgency === 'HIGH';
-  if (!hard && urgent) return 'Oportunidad - Easy Win';
-  if (hard && urgent) return 'Cuenta estratégica - High Stake';
+function getQuadrantTag(integration: IntegrationLevel, urgency: Urgency) {
+  const easy = integration === IntegrationLevel.LOW;
+  const urgent = urgency === Urgency.HIGH;
+  const not_urgent = urgency === Urgency.LOW;
+  if (easy && !not_urgent) return 'Oportunidad - Easy Win';
+  if (!easy && urgent) return 'Cuenta estratégica - High Stake';
   return 'No prioritario';
 }
 
@@ -36,8 +47,8 @@ export function SegmentationMatrix({ meetings }: SegmentationMatrixProps) {
     .map((meeting) => {
       const category = meeting.meetingCategory!;
       return {
-        x: INTEGRATION_TO_AXIS[category.integrationLevel],
-        y: URGENCY_TO_AXIS[category.urgency],
+        x: INTEGRATION_TO_AXIS[category.integrationLevel] + (Math.random() - 0.5) * 0.4,
+        y: URGENCY_TO_AXIS[category.urgency] + (Math.random() - 0.5) * 0.4,
         z: WEEKLY_VOLUME_TO_SIZE[category.weeklyVolume],
         color: SEASONALITY_TO_COLOR[category.seasonality],
         label: meeting.client.name,
@@ -62,6 +73,8 @@ export function SegmentationMatrix({ meetings }: SegmentationMatrixProps) {
         height={460}
         xTicks={[1, 2, 3]}
         yTicks={[1, 2, 3]}
+        xAxisLabel="Dificultad de integración"
+        yAxisLabel="Urgencia"
         xTickFormatter={(value) =>
           value === 1 ? 'Baja' : value === 2 ? 'Media' : 'Alta'
         }
@@ -71,24 +84,18 @@ export function SegmentationMatrix({ meetings }: SegmentationMatrixProps) {
         renderTooltip={(point) => (
           <div className={styles.tooltip}>
             <p className={styles.tooltipTitle}>{String(point.clientName)}</p>
+            <p className={styles.tooltipBoldLine}>{String(point.quadrant)}</p>
             <p className={styles.tooltipLine}>Vendedor: {String(point.salesmanName)}</p>
             <p className={styles.tooltipLine}>Integración: {String(point.integration)}</p>
             <p className={styles.tooltipLine}>Urgencia: {String(point.urgency)}</p>
             <p className={styles.tooltipLine}>Volumen: {String(point.weeklyVolume)}</p>
             <p className={styles.tooltipLine}>Estacionalidad: {String(point.seasonality)}</p>
-            <p className={styles.tooltipLine}>Segmento: {String(point.quadrant)}</p>
           </div>
         )}
       />
 
-      <div className={styles.quadrants}>
-        <span className={styles.quadrantOne}>No prioritario</span>
-        <span className={styles.quadrantTwo}>Oportunidad - Easy Win</span>
-        <span className={styles.quadrantThree}>No prioritario</span>
-        <span className={styles.quadrantFour}>Cuenta estratégica - High Stake</span>
-      </div>
-
       <div className={styles.legend}>
+        Estacionalidad:
         <div className={styles.legendItem}>
           <span className={styles.legendDot} style={{ backgroundColor: '#60a5fa' }} />
           <span>Constante</span>

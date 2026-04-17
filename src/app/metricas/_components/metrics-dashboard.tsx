@@ -121,7 +121,10 @@ export function MetricsDashboard({ meetings }: MetricsDashboardProps) {
         <CardHeader>
           <CardTitle>Matriz de segmentación</CardTitle>
           <CardDescription>
-            Cruza integración y urgencia, con tamaño por volumen y color por estacionalidad
+            Identificación de oportunidades por cliente según la urgencia, esfuerzo requerido,
+            volumen demandado y estacionalidad.
+            <br />
+            El tamaño de la circunferencia es proporcional al volumen demandado.            
           </CardDescription>
         </CardHeader>
         <CardContent>

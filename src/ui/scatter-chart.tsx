@@ -32,6 +32,8 @@ interface ScatterChartProps {
   yTicks?: number[];
   xTickFormatter?: (value: number) => string;
   yTickFormatter?: (value: number) => string;
+  xAxisLabel?: string;
+  yAxisLabel?: string;
   height?: number;
   className?: string;
   renderTooltip?: (point: ScatterPoint) => React.ReactNode;
@@ -62,6 +64,8 @@ const DefaultTooltipContent = ({ active, payload, renderTooltip }: TooltipConten
   );
 };
 
+const axisTickStyle = { fill: 'var(--foreground)', fontSize: 13 };
+
 export const ScatterChart = ({
   data,
   xDomain = [0.5, 3.5],
@@ -71,13 +75,23 @@ export const ScatterChart = ({
   yTicks = [1, 2, 3],
   xTickFormatter,
   yTickFormatter,
+  xAxisLabel,
+  yAxisLabel,
   height = 400,
   className = '',
   renderTooltip,
-}: ScatterChartProps) => (
+}: ScatterChartProps) => {
+  const margin = {
+    top: 20,
+    right: 20,
+    bottom: xAxisLabel ? 48 : 28,
+    left: yAxisLabel ? 64 : 52,
+  };
+
+  return (
   <div className={`${styles.container} ${className}`}>
     <ResponsiveContainer width="100%" height={height}>
-      <RechartsScatter margin={{ top: 16, right: 16, bottom: 16, left: 0 }}>
+      <RechartsScatter margin={margin}>
         <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" />
         <XAxis
           type="number"
@@ -85,9 +99,21 @@ export const ScatterChart = ({
           domain={xDomain}
           ticks={xTicks}
           tickFormatter={xTickFormatter}
-          tick={{ fill: 'var(--muted-foreground)', fontSize: 12 }}
+          tick={axisTickStyle}
           axisLine={{ stroke: 'var(--border)' }}
           tickLine={false}
+          label={
+            xAxisLabel
+              ? {
+                  value: xAxisLabel,
+                  position: 'insideBottom',
+                  offset: -10,
+                  fill: 'var(--foreground)',
+                  fontSize: '1rem',
+                  fontWeight: 600,
+                }
+              : undefined
+          }
         />
         <YAxis
           type="number"
@@ -95,9 +121,22 @@ export const ScatterChart = ({
           domain={yDomain}
           ticks={yTicks}
           tickFormatter={yTickFormatter}
-          tick={{ fill: 'var(--muted-foreground)', fontSize: 12 }}
+          tick={axisTickStyle}
           axisLine={{ stroke: 'var(--border)' }}
           tickLine={false}
+          label={
+            yAxisLabel
+              ? {
+                  value: yAxisLabel,
+                  angle: -90,
+                  position: 'insideLeft',
+                  fill: 'var(--foreground)',
+                  fontSize: '1rem',
+                  fontWeight: 600,
+                  dx: -10,
+                }
+              : undefined
+          }
         />
         <ZAxis type="number" dataKey="z" range={zRange} />
         <Tooltip
@@ -111,4 +150,5 @@ export const ScatterChart = ({
       </RechartsScatter>
     </ResponsiveContainer>
   </div>
-);
+  );
+};
