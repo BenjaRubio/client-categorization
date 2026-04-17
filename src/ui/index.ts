@@ -6,3 +6,6 @@ export * from './checkbox';
 export * from './input';
 export * from './text-area';
 export * from './badge';
+export * from './pie-chart';
+export * from './bar-chart';
+export * from './scatter-chart';

@@ -65,9 +65,9 @@ export const SEASONALITY_LABELS: Record<Seasonality, string> = {
 };
 
 export const INTEGRATION_LEVEL_LABELS: Record<IntegrationLevel, string> = {
-  LOW: 'Bajo',
-  MEDIUM: 'Medio',
-  HIGH: 'Alto',
+  LOW: 'Baja',
+  MEDIUM: 'Media',
+  HIGH: 'Alta',
 };
 
 export const URGENCY_LABELS: Record<Urgency, string> = {

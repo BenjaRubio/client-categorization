@@ -1,0 +1,123 @@
+.container {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.filterToolbar {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+@media (min-width: 900px) {
+  .filterToolbar {
+    flex-direction: row;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 1rem;
+  }
+}
+
+.filters {
+  display: grid;
+  grid-template-columns: repeat(1, minmax(0, 1fr));
+  gap: 0.75rem;
+  flex: 1;
+  min-width: 0;
+}
+
+@media (min-width: 900px) {
+  .filters {
+    grid-template-columns: 1fr 1fr 1fr auto;
+    align-items: end;
+  }
+}
+
+.filterActions {
+  display: flex;
+  justify-content: flex-end;
+  flex-shrink: 0;
+}
+
+.filterGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 0.375rem;
+}
+
+.filterLabel {
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  color: var(--muted-foreground);
+  letter-spacing: 0.04em;
+}
+
+.pendingCheckbox {
+  margin-bottom: 0.5rem;
+}
+
+.emptyRow {
+  text-align: center;
+  color: var(--muted-foreground);
+  padding: 2rem 1rem;
+}
+
+.detailsButton {
+  height: 2rem;
+  padding: 0 0.75rem;
+  border-radius: var(--radius);
+  border: 1px solid var(--border);
+  background-color: transparent;
+  color: var(--foreground);
+  font-size: 1rem;
+  font-weight: 500;
+}
+
+.detailsButton:hover {
+  background-color: var(--muted);
+}
+
+.pendingAction {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+/* Stable table column widths + less reflow when row content changes */
+.tableShell {
+  width: 100%;
+  min-width: 0;
+}
+
+.tableShell :global(table) {
+  table-layout: fixed;
+}
+
+.colClient {
+  width: 26%;
+}
+
+.colSalesman {
+  width: 20%;
+}
+
+.colDate {
+  width: 12%;
+}
+
+.colVenta {
+  width: 12%;
+}
+
+.colCategories {
+  width: 30%;
+}
+
+.clipText {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  max-width: 0;
+}

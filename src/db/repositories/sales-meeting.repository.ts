@@ -22,7 +22,7 @@ export async function findById(id: string): Promise<SalesMeeting | null> {
 export async function findWithCategory(id: string) {
   return prisma.salesMeeting.findUnique({
     where: { id },
-    include: { meetingCategory: true },
+    include: { meetingCategory: true, client: true, salesman: true },
   });
 }
 
@@ -30,5 +30,16 @@ export async function findUnclassified() {
   return prisma.salesMeeting.findMany({
     where: { meetingCategory: null },
     include: { client: true },
+  });
+}
+
+export async function findAllWithDetails() {
+  return prisma.salesMeeting.findMany({
+    include: {
+      client: true,
+      salesman: true,
+      meetingCategory: true,
+    },
+    orderBy: { date: 'desc' },
   });
 }

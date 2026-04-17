@@ -1,0 +1,23 @@
+.container {
+  width: 100%;
+  font-size: 0.75rem;
+}
+
+.tooltip {
+  background: var(--card) !important;
+  border: 1px solid var(--border) !important;
+  border-radius: var(--radius) !important;
+  padding: 0.5rem 0.75rem !important;
+  box-shadow: var(--shadow-md) !important;
+}
+
+.tooltipLabel {
+  font-weight: 600;
+  margin-bottom: 0.25rem;
+  color: var(--foreground);
+}
+
+.tooltipItem {
+  font-size: 0.75rem;
+  color: var(--muted-foreground);
+}
