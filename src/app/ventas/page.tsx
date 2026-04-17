@@ -23,8 +23,8 @@ export default async function VentasPage() {
         <CardHeader>
           <CardTitle>Reuniones de ventas</CardTitle>
           <CardDescription>
-            Filtra por vendedor, estado de cierre o cliente. Las reuniones sin
-            categoría pueden clasificarse manualmente.
+            Filtra por vendedor, estado de cierre, cliente o cualquier categoría.
+            Las reuniones sin categoría pueden clasificarse manualmente.
           </CardDescription>
         </CardHeader>
         <CardContent>

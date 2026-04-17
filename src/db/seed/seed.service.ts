@@ -3,7 +3,6 @@ import {
   salesmanRepository,
   salesMeetingRepository,
 } from '@/db/repositories';
-import { classifyMeeting } from '@/services/classification';
 
 export interface CsvRow {
   Nombre: string;
@@ -23,21 +22,21 @@ export async function processRow(row: CsvRow, index: number) {
   let client = await clientRepository.findByName(row.Nombre);
 
   if (client) {
-    console.log(`  → Client already exists (${row.Nombre})`);
+    console.log(`  -> Client already exists (${row.Nombre})`);
   } else {
     client = await clientRepository.create({
       name: row.Nombre,
       email,
       phoneNumber: row['Numero de Telefono'],
     });
-    console.log(`  + Client created`);
+    console.log('  + Client created');
   }
 
   const salesmanName = row['Vendedor asignado'];
   let salesman = await salesmanRepository.findByName(salesmanName);
 
   if (salesman) {
-    console.log(`  → Salesman "${salesmanName}" already exists`);
+    console.log(`  -> Salesman "${salesmanName}" already exists`);
   } else {
     salesman = await salesmanRepository.create({ name: salesmanName });
     console.log(`  + Salesman "${salesmanName}" created`);
@@ -51,17 +50,4 @@ export async function processRow(row: CsvRow, index: number) {
     transcription: row.Transcripcion,
   });
   console.log(`  + SalesMeeting created (${meeting.id})`);
-
-  try {
-    await classifyMeeting({
-      salesMeetingId: meeting.id,
-      clientName: row.Nombre,
-      meetingDate: row['Fecha de la Reunion'],
-      transcription: row.Transcripcion,
-    });
-  } catch (error) {
-    console.error(
-      `  ✗ Classification failed: ${error instanceof Error ? error.message : error}`
-    );
-  }
 }

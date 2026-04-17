@@ -7,7 +7,14 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
-    "classify:pendings": "tsx src/services/classification/classify-pendings.ts"
+    "classify:pendings": "tsx src/services/classification/classify-pendings.ts",
+    "prisma:generate": "prisma generate",
+    "prisma:migrate:dev": "dotenv -e .env.local -- prisma migrate dev",
+    "prisma:migrate:deploy": "prisma migrate deploy",
+    "prisma:seed": "prisma db seed",
+    "seed:if-empty": "tsx src/db/seed/seed-if-empty.ts",
+    "postdeploy:jobs": "npm run classify:pendings",
+    "vercel-build": "prisma generate && prisma migrate deploy && npm run seed:if-empty && next build"
   },
   "dependencies": {
     "@google/genai": "^1.50.1",
@@ -29,6 +36,7 @@
     "@types/papaparse": "^5.5.2",
     "@types/react": "^19",
     "@types/react-dom": "^19",
+    "dotenv-cli": "^11.0.0",
     "eslint": "^9",
     "eslint-config-next": "16.2.3",
     "tsx": "^4.21.0",
@@ -36,6 +44,6 @@
   },
   "prisma": {
     "schema": "src/db/prisma/schema.prisma",
-    "seed": "tsx src/db/seed.ts"
+    "seed": "tsx src/db/seed/index.ts"
   }
 }

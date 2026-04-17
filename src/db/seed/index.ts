@@ -2,9 +2,10 @@ import prisma from '@/db/prisma-client';
 import fs from 'fs';
 import path from 'path';
 import Papa from 'papaparse';
-import { CsvRow, processRow } from '@/services/seed.service';
+import { pathToFileURL } from 'url';
+import { CsvRow, processRow } from './seed.service';
 
-async function main() {
+export async function runSeed() {
   console.log('Starting seed process...\n');
 
   const csvFilePath = path.join(process.cwd(), 'src/db/data/vambe_clients.csv');
@@ -29,17 +30,26 @@ async function main() {
 
   for (let i = 0; i < data.length; i++) {
     await processRow(data[i], i);
-    await new Promise((resolve) => setTimeout(resolve, 10000));
   }
 
-  console.log('\n✓ Seed process finished.');
+  console.log('\nSeed process finished.');
 }
 
-main()
-  .catch((e) => {
-    console.error(e);
+async function main() {
+  try {
+    await runSeed();
+  } catch (error) {
+    console.error(error);
     process.exit(1);
-  })
-  .finally(async () => {
+  } finally {
     await prisma.$disconnect();
-  });
+  }
+}
+
+const isMainModule = process.argv[1]
+  ? import.meta.url === pathToFileURL(process.argv[1]).href
+  : false;
+
+if (isMainModule) {
+  void main();
+}
