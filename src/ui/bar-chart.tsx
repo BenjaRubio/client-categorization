@@ -27,6 +27,7 @@ interface BarChartProps {
   height?: number;
   showLegend?: boolean;
   className?: string;
+  tooltipContent?: React.ComponentProps<typeof Tooltip>['content'];
 }
 
 export const BarChart = ({
@@ -36,6 +37,7 @@ export const BarChart = ({
   height = 300,
   showLegend = true,
   className = '',
+  tooltipContent,
 }: BarChartProps) => (
   <div className={`${styles.container} ${className}`}>
     <ResponsiveContainer width="100%" height={height}>
@@ -55,11 +57,16 @@ export const BarChart = ({
         />
         <Tooltip
           cursor={false}
-          contentStyle={{
-            background: 'var(--card)',
-            border: '1px solid var(--border)',
-            borderRadius: 'var(--radius)',
-          }}
+          content={tooltipContent}
+          contentStyle={
+            tooltipContent
+              ? undefined
+              : {
+                  background: 'var(--card)',
+                  border: '1px solid var(--border)',
+                  borderRadius: 'var(--radius)',
+                }
+          }
         />
         {showLegend && (
           <Legend

@@ -171,6 +171,21 @@ export function MetricsDashboard({ meetings }: MetricsDashboardProps) {
         </Button>
       </div>
 
+      <Card variant="glass">
+        <CardHeader>
+          <CardTitle>Matriz de segmentación</CardTitle>
+          <CardDescription>
+            Identificación de oportunidades por cliente según la urgencia, esfuerzo requerido,
+            volumen demandado y estacionalidad.
+            <br />
+            El tamaño de la circunferencia es proporcional al volumen demandado.            
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <SegmentationMatrix meetings={categorizedMeetings} />
+        </CardContent>
+      </Card>
+
       <div className={styles.gridTwo}>
         <Card variant="glass">
           <CardHeader>
@@ -185,7 +200,7 @@ export function MetricsDashboard({ meetings }: MetricsDashboardProps) {
         <Card variant="glass">
           <CardHeader>
             <CardTitle>Canales de adquisición</CardTitle>
-            <CardDescription>Distribución de canales de adquisición</CardDescription>
+            <CardDescription>Total de ventas cerradas y abiertas por canal</CardDescription>
           </CardHeader>
           <CardContent>
             <ChannelsPieChart meetings={categorizedMeetings} />
@@ -213,20 +228,7 @@ export function MetricsDashboard({ meetings }: MetricsDashboardProps) {
         </Card>
       </div>
 
-      <Card variant="glass">
-        <CardHeader>
-          <CardTitle>Matriz de segmentación</CardTitle>
-          <CardDescription>
-            Identificación de oportunidades por cliente según la urgencia, esfuerzo requerido,
-            volumen demandado y estacionalidad.
-            <br />
-            El tamaño de la circunferencia es proporcional al volumen demandado.            
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          <SegmentationMatrix meetings={categorizedMeetings} />
-        </CardContent>
-      </Card>
+      
 
       <MetricsFiltersDrawer
         open={drawerOpen}

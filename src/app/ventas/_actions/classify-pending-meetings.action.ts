@@ -50,5 +50,6 @@ export async function classifyPendingMeetingsAction(
   }
 
   revalidatePath('/ventas');
+  revalidatePath('/metricas');
   return { ok: true, success, skipped, failed };
 }

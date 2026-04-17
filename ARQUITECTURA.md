@@ -200,7 +200,11 @@ Para todas las métricas se puedne aplicar filtros, ya sea por datos de vendedor
 Cruza la dificultad o esfuerzo de la integración de la solicitud del cliente con la urgencia que este tiene, pudiendo así identificar "Easy win", "Cuentas estratégicas" o "No prioritarios" desde un punto de vista de negocio.
 
 Además se considera el volumen de demanda declarado por el cliente, lo cual se puede asociar al nivel de facturación.
-Por colores también se muestra la estacionalidad de su demanda, ya que aquellos que tienen períodos de alta demanda en fechas específicas, podrían requerir alta urgencia para esas fechas, y si no se atacan rápido podría perderse la oportunidad.
+Hay un toggle que cambia si los colores muestra la estacionalidad de la demanda del cliente o si la venta se cerró o no.
+La estacionalidad de su demanda, ya que aquellos que tienen períodos de alta demanda en fechas específicas, podrían requerir alta urgencia para esas fechas, y si no se atacan rápido podría perderse la oportunidad.
+Por cierre se puede analizar qué segmentos de cliente se están atacando más o siendo más eficiente.
+
+Esta matriz utiliza datos cualitativos, de modo que se utilizó un valor random de dispersión al colocar a cada cliente en el gráfico y poder ver las nubes. Sino quedarían estrictamente uno sobre otro en una grilla de 3x3.
 
 ### Reuniones por vendedor
 
