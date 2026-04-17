@@ -16,6 +16,11 @@
   color: var(--muted-foreground);
 }
 
+.navLink {
+  color: inherit;
+  text-decoration: none;
+}
+
 .navLink:hover {
   color: var(--foreground);
   transition: color 0.2s ease;

@@ -33,6 +33,35 @@
   display: flex;
   justify-content: center;
   gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.actionLink {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  border-radius: var(--radius);
+  padding: 0.75rem 1.125rem;
+  font-size: 0.95rem;
+  font-weight: 600;
+  text-decoration: none;
+  transition: transform 0.2s ease, border-color 0.2s ease, background-color 0.2s ease;
+}
+
+.actionLink:hover {
+  transform: translateY(-1px);
+}
+
+.actionPrimary {
+  color: #fff;
+  background: var(--primary);
+  border: 1px solid transparent;
+}
+
+.actionOutline {
+  color: var(--foreground);
+  border: 1px solid var(--border);
+  background: rgba(255, 255, 255, 0.02);
 }
 
 .features {

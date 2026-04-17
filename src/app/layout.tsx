@@ -1,7 +1,8 @@
-import type { Metadata } from "next";
-import { Inter, Outfit } from "next/font/google";
-import "./globals.css";
-import styles from "../styles/layout.module.css";
+import type { Metadata } from 'next';
+import Link from 'next/link';
+import { Inter, Outfit } from 'next/font/google';
+import './globals.css';
+import styles from '../styles/layout.module.css';
 
 const inter = Inter({
   variable: "--font-inter",
@@ -14,8 +15,8 @@ const outfit = Outfit({
 });
 
 export const metadata: Metadata = {
-  title: "Client Categorization",
-  description: "Advanced client categorization platform",
+  title: 'Clasificacion de clientes',
+  description: 'Plataforma para gestionar reuniones, clasificar clientes y analizar metricas',
 };
 
 export default function RootLayout({
@@ -24,13 +25,22 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
+    <html lang="es">
       <body className={`${inter.variable} ${outfit.variable}`}>
         <nav className={`glass ${styles.nav}`}>
-          <div className="text-xl font-bold gradient-text">ClientCat</div>
+          <Link href="/" className="text-xl font-bold gradient-text">
+            ClientCat
+          </Link>
           <div className={styles.navLinks}>
-            <a href="/" className={styles.navLink}>Home</a>
-            <a href="/dashboard" className={styles.navLink}>Dashboard</a>
+            <Link href="/" className={styles.navLink}>
+              Inicio
+            </Link>
+            <Link href="/ventas" className={styles.navLink}>
+              Ventas
+            </Link>
+            <Link href="/metricas" className={styles.navLink}>
+              Metricas
+            </Link>
           </div>
         </nav>
         <main className={styles.main}>
