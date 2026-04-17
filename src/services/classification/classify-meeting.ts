@@ -29,7 +29,10 @@ export async function classifyMeeting(input: ClassificationInput) {
   });
 
   const response = await callLLM(request, validateClassification);
+  console.log("response", response.text);
   const parsed = extractJson(response.text);
+
+  console.log("meetings parsed", parsed);
 
   const category = await meetingCategoryRepository.create({
     salesMeetingId: input.salesMeetingId,

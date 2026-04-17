@@ -1,6 +1,6 @@
 'use client';
 
-import { useMemo, useState, useTransition, type Dispatch, type SetStateAction } from 'react';
+import { useEffect, useMemo, useState, type Dispatch, type SetStateAction } from 'react';
 import { useRouter } from 'next/navigation';
 import type {
   AwarenessChannel,
@@ -34,7 +34,7 @@ import {
   type MeetingCategoryData,
 } from './meeting-details-modal';
 import { SalesFiltersDrawer, type ClosedFilter } from './sales-filters-drawer';
-import { classifyPendingMeetingsAction } from '../_actions/classify-pending-meetings.action';
+import { classifyMeetingAction } from '../_actions/classify-meeting.action';
 import styles from './styles/meetings-table.module.css';
 
 interface MeetingRowData {
@@ -59,7 +59,11 @@ export function MeetingsTable({
   clientOptions,
 }: MeetingsTableProps) {
   const router = useRouter();
-  const [batchPending, startBatch] = useTransition();
+  const [batchRunning, setBatchRunning] = useState(false);
+  const [batchActiveMeetingId, setBatchActiveMeetingId] = useState<string | null>(null);
+  const [optimisticClassifiedIds, setOptimisticClassifiedIds] = useState(
+    () => new Set<string>()
+  );
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [salesmanId, setSalesmanId] = useState<string>('all');
   const [clientId, setClientId] = useState<string>('all');
@@ -117,9 +121,27 @@ export function MeetingsTable({
     urgency,
   ]);
 
+  useEffect(() => {
+    setOptimisticClassifiedIds((prev) => {
+      if (prev.size === 0) return prev;
+      const next = new Set(prev);
+      let changed = false;
+      for (const id of prev) {
+        if (meetings.some((m) => m.id === id && m.meetingCategory)) {
+          next.delete(id);
+          changed = true;
+        }
+      }
+      return changed ? next : prev;
+    });
+  }, [meetings]);
+
   const pendingInView = useMemo(
-    () => filteredMeetings.filter((m) => m.meetingCategory === null),
-    [filteredMeetings]
+    () =>
+      filteredMeetings.filter(
+        (m) => m.meetingCategory === null && !optimisticClassifiedIds.has(m.id)
+      ),
+    [filteredMeetings, optimisticClassifiedIds]
   );
 
   const salesmanSelectOptions = useMemo<SelectOption[]>(
@@ -166,6 +188,27 @@ export function MeetingsTable({
     integrationLevel.length +
     urgency.length;
 
+  const handleClassifyPendingBatch = async () => {
+    if (pendingInView.length === 0) return;
+    setBatchRunning(true);
+    try {
+      for (const m of pendingInView) {
+        setBatchActiveMeetingId(m.id);
+        try {
+          await classifyMeetingAction(m.id);
+          setOptimisticClassifiedIds((prev) => new Set(prev).add(m.id));
+        } catch (error) {
+          console.error(error);
+        }
+        router.refresh();
+      }
+    } finally {
+      setBatchActiveMeetingId(null);
+      setBatchRunning(false);
+      router.refresh();
+    }
+  };
+
   return (
     <div className={styles.container}>
       <div className={styles.topBar}>
@@ -175,15 +218,10 @@ export function MeetingsTable({
         <div className={styles.topBarActions}>
           <Button
             type="button"
-            disabled={pendingInView.length === 0 || batchPending}
-            onClick={() =>
-              startBatch(async () => {
-                await classifyPendingMeetingsAction(pendingInView.map((m) => m.id));
-                router.refresh();
-              })
-            }
+            disabled={pendingInView.length === 0 || batchRunning}
+            onClick={handleClassifyPendingBatch}
           >
-            {batchPending
+            {batchRunning
               ? 'Clasificando...'
               : `Clasificar pendientes (${pendingInView.length})`}
           </Button>
@@ -208,6 +246,8 @@ export function MeetingsTable({
           <TableBody>
             {filteredMeetings.map((meeting) => {
               const category = meeting.meetingCategory;
+              const showAsClassified =
+                category != null || optimisticClassifiedIds.has(meeting.id);
 
               return (
                 <TableRow key={meeting.id}>
@@ -232,7 +272,7 @@ export function MeetingsTable({
                     </Badge>
                   </TableCell>
                   <TableCell className={styles.colCategories}>
-                    {category ? (
+                    {showAsClassified ? (
                       <div className={styles.categoryActions}>
                         <button
                           type="button"
@@ -252,7 +292,11 @@ export function MeetingsTable({
                         >
                           Mostrar detalles
                         </button>
-                        <ClassifyButton salesMeetingId={meeting.id} />
+                        <ClassifyButton
+                          salesMeetingId={meeting.id}
+                          batchActiveMeetingId={batchActiveMeetingId}
+                          isBatchRunning={batchRunning}
+                        />
                       </div>
                     )}
                   </TableCell>

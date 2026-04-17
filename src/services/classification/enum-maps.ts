@@ -76,12 +76,64 @@ export const URGENCY: Record<string, Urgency> = {
   high: 'HIGH',
 };
 
-export function mapEnum<T>(map: Record<string, T>, value: string, field: string): T {
-  const mapped = map[value];
+/** Spanish / loose wording some models use for low | medium | high. */
+const LOW_MEDIUM_HIGH_SYNONYMS: Record<string, 'low' | 'medium' | 'high'> = {
+  baja: 'low',
+  bajo: 'low',
+  minima: 'low',
+  minimal: 'low',
+  media: 'medium',
+  medio: 'medium',
+  mediana: 'medium',
+  moderada: 'medium',
+  moderate: 'medium',
+  alta: 'high',
+  alto: 'high',
+  maxima: 'high',
+  maximal: 'high',
+};
+
+function normalizeLookupKey(raw: unknown): string {
+  return String(raw ?? '')
+    .trim()
+    .toLowerCase()
+    .replace(/\s+/g, '_');
+}
+
+export function mapEnum<T>(map: Record<string, T>, raw: unknown, field: string): T {
+  let key = normalizeLookupKey(raw);
+
+  if (field === 'integration_level' || field === 'urgency') {
+    key = LOW_MEDIUM_HIGH_SYNONYMS[key] ?? key;
+  }
+
+  let mapped = map[key];
+
+  if (!mapped && field !== 'weekly_volume' && key.includes('-')) {
+    mapped = map[key.replace(/-/g, '_')];
+  }
+
   if (!mapped) {
     throw new Error(
-      `Invalid "${value}" for "${field}". Valid: ${Object.keys(map).join(', ')}`
+      `Invalid "${String(raw)}" for "${field}". Valid: ${Object.keys(map).join(', ')}`
     );
   }
   return mapped;
+}
+
+/**
+ * Ensures parsed classification values map to Prisma enums.
+ * Used inside LLM response validation so the provider fallback chain
+ * can retry when the JSON shape is fine but values are not in our maps.
+ */
+export function assertClassificationEnumMaps(
+  parsed: Record<string, unknown>
+): void {
+  mapEnum(WEEKLY_VOLUME, parsed.weekly_volume, 'weekly_volume');
+  mapEnum(USE_CASE, parsed.use_case, 'use_case');
+  mapEnum(INDUSTRY, parsed.industry, 'industry');
+  mapEnum(AWARENESS_CHANNEL, parsed.awareness_channel, 'awareness_channel');
+  mapEnum(SEASONALITY, parsed.seasonality, 'seasonality');
+  mapEnum(INTEGRATION_LEVEL, parsed.integration_level, 'integration_level');
+  mapEnum(URGENCY, parsed.urgency, 'urgency');
 }

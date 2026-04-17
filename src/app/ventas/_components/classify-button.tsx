@@ -7,11 +7,22 @@ import { classifyMeetingAction } from '../_actions/classify-meeting.action';
 
 interface ClassifyButtonProps {
   salesMeetingId: string;
+  batchActiveMeetingId?: string | null;
+  isBatchRunning?: boolean;
 }
 
-export function ClassifyButton({ salesMeetingId }: ClassifyButtonProps) {
+export function ClassifyButton({
+  salesMeetingId,
+  batchActiveMeetingId = null,
+  isBatchRunning = false,
+}: ClassifyButtonProps) {
   const [isPending, startTransition] = useTransition();
   const router = useRouter();
+
+  const isThisRowBatchLoading =
+    isBatchRunning && batchActiveMeetingId === salesMeetingId;
+  const showLoading = isPending || isThisRowBatchLoading;
+  const disabled = isPending || isBatchRunning;
 
   return (
     <Button
@@ -22,9 +33,9 @@ export function ClassifyButton({ salesMeetingId }: ClassifyButtonProps) {
           router.refresh();
         })
       }
-      disabled={isPending}
+      disabled={disabled}
     >
-      {isPending ? 'Clasificando...' : 'Clasificar'}
+      {showLoading ? 'Clasificando...' : 'Clasificar'}
     </Button>
   );
 }

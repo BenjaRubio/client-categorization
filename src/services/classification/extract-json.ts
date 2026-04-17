@@ -1,4 +1,5 @@
 import { LLMResponse } from '@/services/llm/types';
+import { assertClassificationEnumMaps } from './enum-maps';
 
 const REQUIRED_FIELDS = [
   'weekly_volume',
@@ -53,4 +54,6 @@ export function validateClassification(response: LLMResponse): void {
       `Response missing fields: ${missing.join(', ')}. Got keys: ${Object.keys(parsed).join(', ')}`
     );
   }
+
+  assertClassificationEnumMaps(parsed);
 }
