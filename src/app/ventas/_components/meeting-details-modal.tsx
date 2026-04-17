@@ -29,7 +29,7 @@ export interface MeetingDetailsModalMeeting {
   transcription: string;
   client: { name: string };
   salesman: { name: string };
-  meetingCategory: MeetingCategoryData;
+  meetingCategory: MeetingCategoryData | null;
 }
 
 interface MeetingDetailsModalProps {
@@ -52,6 +52,9 @@ export function MeetingDetailsModal({ meeting, onClose }: MeetingDetailsModalPro
             {new Date(meeting.date).toLocaleDateString('es-CL')}
           </h3>
           <div className={styles.modalHeaderRight}>
+            {!category && (
+              <Badge variant="neutral">Pendiente de clasificar</Badge>
+            )}
             <Badge variant={meeting.closed ? 'success' : 'warning'}>
               {meeting.closed ? 'Cerrada' : 'Abierta'}
             </Badge>
@@ -66,45 +69,49 @@ export function MeetingDetailsModal({ meeting, onClose }: MeetingDetailsModalPro
           </div>
         </header>
 
-        <div className={styles.modalBody}>
+        <div
+          className={`${styles.modalBody} ${category ? styles.modalBodyWithCategories : ''}`}
+        >
           <section className={styles.transcriptionSection}>
             <h4 className={styles.sectionTitle}>Transcripción</h4>
             <p className={styles.transcriptionText}>{meeting.transcription}</p>
           </section>
 
-          <section className={styles.categoriesSection}>
-            <h4 className={styles.sectionTitle}>Categorías</h4>
-            <dl className={styles.categoryDetailList}>
-              <div className={styles.categoryDetailItem}>
-                <dt>Volumen semanal</dt>
-                <dd>{WEEKLY_VOLUME_LABELS[category.weeklyVolume]}</dd>
-              </div>
-              <div className={styles.categoryDetailItem}>
-                <dt>Caso de uso</dt>
-                <dd>{USE_CASE_LABELS[category.useCase]}</dd>
-              </div>
-              <div className={styles.categoryDetailItem}>
-                <dt>Industria</dt>
-                <dd>{INDUSTRY_LABELS[category.industry]}</dd>
-              </div>
-              <div className={styles.categoryDetailItem}>
-                <dt>Canal</dt>
-                <dd>{AWARENESS_CHANNEL_LABELS[category.awarenessChannel]}</dd>
-              </div>
-              <div className={styles.categoryDetailItem}>
-                <dt>Estacionalidad</dt>
-                <dd>{SEASONALITY_LABELS[category.seasonality]}</dd>
-              </div>
-              <div className={styles.categoryDetailItem}>
-                <dt>Nivel de integración</dt>
-                <dd>{INTEGRATION_LEVEL_LABELS[category.integrationLevel]}</dd>
-              </div>
-              <div className={styles.categoryDetailItem}>
-                <dt>Urgencia</dt>
-                <dd>{URGENCY_LABELS[category.urgency]}</dd>
-              </div>
-            </dl>
-          </section>
+          {category && (
+            <section className={styles.categoriesSection}>
+              <h4 className={styles.sectionTitle}>Categorías</h4>
+              <dl className={styles.categoryDetailList}>
+                <div className={styles.categoryDetailItem}>
+                  <dt>Volumen semanal</dt>
+                  <dd>{WEEKLY_VOLUME_LABELS[category.weeklyVolume]}</dd>
+                </div>
+                <div className={styles.categoryDetailItem}>
+                  <dt>Caso de uso</dt>
+                  <dd>{USE_CASE_LABELS[category.useCase]}</dd>
+                </div>
+                <div className={styles.categoryDetailItem}>
+                  <dt>Industria</dt>
+                  <dd>{INDUSTRY_LABELS[category.industry]}</dd>
+                </div>
+                <div className={styles.categoryDetailItem}>
+                  <dt>Canal</dt>
+                  <dd>{AWARENESS_CHANNEL_LABELS[category.awarenessChannel]}</dd>
+                </div>
+                <div className={styles.categoryDetailItem}>
+                  <dt>Estacionalidad</dt>
+                  <dd>{SEASONALITY_LABELS[category.seasonality]}</dd>
+                </div>
+                <div className={styles.categoryDetailItem}>
+                  <dt>Nivel de integración</dt>
+                  <dd>{INTEGRATION_LEVEL_LABELS[category.integrationLevel]}</dd>
+                </div>
+                <div className={styles.categoryDetailItem}>
+                  <dt>Urgencia</dt>
+                  <dd>{URGENCY_LABELS[category.urgency]}</dd>
+                </div>
+              </dl>
+            </section>
+          )}
         </div>
       </div>
     </div>

@@ -1,6 +1,7 @@
 'use client';
 
-import { useMemo, useState, type Dispatch, type SetStateAction } from 'react';
+import { useMemo, useState, useTransition, type Dispatch, type SetStateAction } from 'react';
+import { useRouter } from 'next/navigation';
 import type {
   AwarenessChannel,
   Industry,
@@ -33,6 +34,7 @@ import {
   type MeetingCategoryData,
 } from './meeting-details-modal';
 import { SalesFiltersDrawer, type ClosedFilter } from './sales-filters-drawer';
+import { classifyPendingMeetingsAction } from '../_actions/classify-pending-meetings.action';
 import styles from './styles/meetings-table.module.css';
 
 interface MeetingRowData {
@@ -56,6 +58,8 @@ export function MeetingsTable({
   salesmanOptions,
   clientOptions,
 }: MeetingsTableProps) {
+  const router = useRouter();
+  const [batchPending, startBatch] = useTransition();
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [salesmanId, setSalesmanId] = useState<string>('all');
   const [clientId, setClientId] = useState<string>('all');
@@ -113,6 +117,11 @@ export function MeetingsTable({
     urgency,
   ]);
 
+  const pendingInView = useMemo(
+    () => filteredMeetings.filter((m) => m.meetingCategory === null),
+    [filteredMeetings]
+  );
+
   const salesmanSelectOptions = useMemo<SelectOption[]>(
     () => [{ value: 'all', label: 'Todos los vendedores' }, ...salesmanOptions],
     [salesmanOptions]
@@ -163,10 +172,26 @@ export function MeetingsTable({
         <p className={styles.resultsCount}>
           Resultados: <strong>{filteredMeetings.length}</strong> de {meetings.length}
         </p>
-        <Button type="button" variant="outline" onClick={() => setDrawerOpen(true)}>
-          <SlidersHorizontal size={16} />
-          Filtrar {activeFiltersCount > 0 ? `(${activeFiltersCount})` : ''}
-        </Button>
+        <div className={styles.topBarActions}>
+          <Button
+            type="button"
+            disabled={pendingInView.length === 0 || batchPending}
+            onClick={() =>
+              startBatch(async () => {
+                await classifyPendingMeetingsAction(pendingInView.map((m) => m.id));
+                router.refresh();
+              })
+            }
+          >
+            {batchPending
+              ? 'Clasificando...'
+              : `Clasificar pendientes (${pendingInView.length})`}
+          </Button>
+          <Button type="button" variant="outline" onClick={() => setDrawerOpen(true)}>
+            <SlidersHorizontal size={16} />
+            Filtrar {activeFiltersCount > 0 ? `(${activeFiltersCount})` : ''}
+          </Button>
+        </div>
       </div>
 
       <div className={styles.tableShell}>
@@ -208,16 +233,25 @@ export function MeetingsTable({
                   </TableCell>
                   <TableCell className={styles.colCategories}>
                     {category ? (
-                      <button
-                        type="button"
-                        className={styles.detailsButton}
-                        onClick={() => setSelectedMeeting(meeting)}
-                      >
-                        Mostrar detalles
-                      </button>
+                      <div className={styles.categoryActions}>
+                        <button
+                          type="button"
+                          className={styles.detailsButton}
+                          onClick={() => setSelectedMeeting(meeting)}
+                        >
+                          Mostrar detalles
+                        </button>
+                        <Badge variant="success">Clasificada</Badge>
+                      </div>
                     ) : (
-                      <div className={styles.pendingAction}>
-                        <Badge variant="neutral">Pendiente</Badge>
+                      <div className={styles.categoryActions}>
+                        <button
+                          type="button"
+                          className={styles.detailsButton}
+                          onClick={() => setSelectedMeeting(meeting)}
+                        >
+                          Mostrar detalles
+                        </button>
                         <ClassifyButton salesMeetingId={meeting.id} />
                       </div>
                     )}
@@ -268,7 +302,7 @@ export function MeetingsTable({
         clearDisabled={filtersAreDefault}
       />
 
-      {selectedMeeting && selectedMeeting.meetingCategory && (
+      {selectedMeeting && (
         <MeetingDetailsModal
           meeting={{
             date: selectedMeeting.date,

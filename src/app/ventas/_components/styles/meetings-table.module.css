@@ -12,6 +12,13 @@
   flex-wrap: wrap;
 }
 
+.topBarActions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem;
+}
+
 .resultsCount {
   margin: 0;
   font-size: 0.9rem;
@@ -43,10 +50,11 @@
   background-color: var(--muted);
 }
 
-.pendingAction {
+.categoryActions {
   display: flex;
   align-items: center;
   gap: 0.5rem;
+  flex-wrap: wrap;
 }
 
 /* Stable table column widths + less reflow when row content changes */
