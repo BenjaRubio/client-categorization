@@ -1,11 +1,18 @@
 'use client';
 
-import { useMemo, useState } from 'react';
+import { useMemo, useState, type Dispatch, type SetStateAction } from 'react';
+import type {
+  AwarenessChannel,
+  Industry,
+  IntegrationLevel,
+  Seasonality,
+  Urgency,
+  UseCase,
+  WeeklyVolume,
+} from '@prisma/client';
 import {
   Badge,
   Button,
-  Checkbox,
-  Select,
   Table,
   TableBody,
   TableCell,
@@ -14,11 +21,18 @@ import {
   TableRow,
   type SelectOption,
 } from '@/ui';
+import {
+  EMPTY_CATEGORY_FILTERS,
+  hasActiveCategoryFilters,
+  matchesCategoryFilters,
+} from '@/ui/filters';
+import { SlidersHorizontal } from 'lucide-react';
 import { ClassifyButton } from './classify-button';
 import {
   MeetingDetailsModal,
   type MeetingCategoryData,
 } from './meeting-details-modal';
+import { SalesFiltersDrawer, type ClosedFilter } from './sales-filters-drawer';
 import styles from './styles/meetings-table.module.css';
 
 interface MeetingRowData {
@@ -37,24 +51,42 @@ interface MeetingsTableProps {
   clientOptions: SelectOption[];
 }
 
-type ClosedFilter = 'all' | 'closed' | 'open';
-
-const CLOSED_OPTIONS: SelectOption[] = [
-  { value: 'all', label: 'Todas' },
-  { value: 'closed', label: 'Cerradas' },
-  { value: 'open', label: 'Abiertas' },
-];
-
 export function MeetingsTable({
   meetings,
   salesmanOptions,
   clientOptions,
 }: MeetingsTableProps) {
+  const [drawerOpen, setDrawerOpen] = useState(false);
   const [salesmanId, setSalesmanId] = useState<string>('all');
   const [clientId, setClientId] = useState<string>('all');
   const [closedFilter, setClosedFilter] = useState<ClosedFilter>('all');
   const [onlyPending, setOnlyPending] = useState(false);
+  const [weeklyVolume, setWeeklyVolume] = useState<WeeklyVolume[]>(EMPTY_CATEGORY_FILTERS.weeklyVolume);
+  const [useCase, setUseCase] = useState<UseCase[]>(EMPTY_CATEGORY_FILTERS.useCase);
+  const [industry, setIndustry] = useState<Industry[]>(EMPTY_CATEGORY_FILTERS.industry);
+  const [awarenessChannel, setAwarenessChannel] = useState<AwarenessChannel[]>(
+    EMPTY_CATEGORY_FILTERS.awarenessChannel
+  );
+  const [seasonality, setSeasonality] = useState<Seasonality[]>(EMPTY_CATEGORY_FILTERS.seasonality);
+  const [integrationLevel, setIntegrationLevel] = useState<IntegrationLevel[]>(
+    EMPTY_CATEGORY_FILTERS.integrationLevel
+  );
+  const [urgency, setUrgency] = useState<Urgency[]>(EMPTY_CATEGORY_FILTERS.urgency);
   const [selectedMeeting, setSelectedMeeting] = useState<MeetingRowData | null>(null);
+
+  const toggleValue = <T extends string>(setter: Dispatch<SetStateAction<T[]>>, value: T) => {
+    setter((prev) => (prev.includes(value) ? prev.filter((item) => item !== value) : [...prev, value]));
+  };
+
+  const categoryFilters = {
+    weeklyVolume,
+    useCase,
+    industry,
+    awarenessChannel,
+    seasonality,
+    integrationLevel,
+    urgency,
+  };
 
   const filteredMeetings = useMemo(() => {
     return meetings.filter((meeting) => {
@@ -63,9 +95,23 @@ export function MeetingsTable({
       if (closedFilter === 'closed' && !meeting.closed) return false;
       if (closedFilter === 'open' && meeting.closed) return false;
       if (onlyPending && meeting.meetingCategory) return false;
+      if (!matchesCategoryFilters(meeting.meetingCategory, categoryFilters)) return false;
       return true;
     });
-  }, [meetings, salesmanId, clientId, closedFilter, onlyPending]);
+  }, [
+    meetings,
+    salesmanId,
+    clientId,
+    closedFilter,
+    onlyPending,
+    weeklyVolume,
+    useCase,
+    industry,
+    awarenessChannel,
+    seasonality,
+    integrationLevel,
+    urgency,
+  ]);
 
   const salesmanSelectOptions = useMemo<SelectOption[]>(
     () => [{ value: 'all', label: 'Todos los vendedores' }, ...salesmanOptions],
@@ -81,66 +127,46 @@ export function MeetingsTable({
     salesmanId === 'all' &&
     clientId === 'all' &&
     closedFilter === 'all' &&
-    !onlyPending;
+    !onlyPending &&
+    !hasActiveCategoryFilters(categoryFilters);
 
   const clearFilters = () => {
     setSalesmanId('all');
     setClientId('all');
     setClosedFilter('all');
     setOnlyPending(false);
+    setWeeklyVolume([]);
+    setUseCase([]);
+    setIndustry([]);
+    setAwarenessChannel([]);
+    setSeasonality([]);
+    setIntegrationLevel([]);
+    setUrgency([]);
   };
+
+  const activeFiltersCount =
+    (salesmanId !== 'all' ? 1 : 0) +
+    (clientId !== 'all' ? 1 : 0) +
+    (closedFilter !== 'all' ? 1 : 0) +
+    (onlyPending ? 1 : 0) +
+    weeklyVolume.length +
+    useCase.length +
+    industry.length +
+    awarenessChannel.length +
+    seasonality.length +
+    integrationLevel.length +
+    urgency.length;
 
   return (
     <div className={styles.container}>
-      <div className={styles.filterToolbar}>
-        <div className={styles.filters}>
-          <div className={styles.filterGroup}>
-            <label className={styles.filterLabel}>Vendedor</label>
-            <Select
-              options={salesmanSelectOptions}
-              value={salesmanId}
-              onChange={setSalesmanId}
-            />
-          </div>
-
-          <div className={styles.filterGroup}>
-            <label className={styles.filterLabel}>Cliente</label>
-            <Select
-              options={clientSelectOptions}
-              value={clientId}
-              onChange={setClientId}
-              searchable
-            />
-          </div>
-
-          <div className={styles.filterGroup}>
-            <label className={styles.filterLabel}>Estado de cierre</label>
-            <Select
-              options={CLOSED_OPTIONS}
-              value={closedFilter}
-              onChange={(value) => setClosedFilter(value as ClosedFilter)}
-            />
-          </div>
-
-          <Checkbox
-            checked={onlyPending}
-            onChange={setOnlyPending}
-            label="Solo pendientes"
-            className={styles.pendingCheckbox}
-          />
-        </div>
-
-        <div className={styles.filterActions}>
-          <Button
-            type="button"
-            variant="outline"
-            size="sm"
-            onClick={clearFilters}
-            disabled={filtersAreDefault}
-          >
-            Limpiar filtros
-          </Button>
-        </div>
+      <div className={styles.topBar}>
+        <p className={styles.resultsCount}>
+          Resultados: <strong>{filteredMeetings.length}</strong> de {meetings.length}
+        </p>
+        <Button type="button" variant="outline" onClick={() => setDrawerOpen(true)}>
+          <SlidersHorizontal size={16} />
+          Filtrar {activeFiltersCount > 0 ? `(${activeFiltersCount})` : ''}
+        </Button>
       </div>
 
       <div className={styles.tableShell}>
@@ -210,6 +236,37 @@ export function MeetingsTable({
           </TableBody>
         </Table>
       </div>
+
+      <SalesFiltersDrawer
+        open={drawerOpen}
+        onClose={() => setDrawerOpen(false)}
+        salesmanOptions={salesmanSelectOptions}
+        clientOptions={clientSelectOptions}
+        salesmanId={salesmanId}
+        clientId={clientId}
+        closedFilter={closedFilter}
+        onlyPending={onlyPending}
+        weeklyVolume={weeklyVolume}
+        useCase={useCase}
+        industry={industry}
+        awarenessChannel={awarenessChannel}
+        seasonality={seasonality}
+        integrationLevel={integrationLevel}
+        urgency={urgency}
+        onChangeSalesman={setSalesmanId}
+        onChangeClient={setClientId}
+        onChangeClosed={setClosedFilter}
+        onChangeOnlyPending={setOnlyPending}
+        onToggleWeeklyVolume={(value) => toggleValue(setWeeklyVolume, value)}
+        onToggleUseCase={(value) => toggleValue(setUseCase, value)}
+        onToggleIndustry={(value) => toggleValue(setIndustry, value)}
+        onToggleAwarenessChannel={(value) => toggleValue(setAwarenessChannel, value)}
+        onToggleSeasonality={(value) => toggleValue(setSeasonality, value)}
+        onToggleIntegrationLevel={(value) => toggleValue(setIntegrationLevel, value)}
+        onToggleUrgency={(value) => toggleValue(setUrgency, value)}
+        onClear={clearFilters}
+        clearDisabled={filtersAreDefault}
+      />
 
       {selectedMeeting && selectedMeeting.meetingCategory && (
         <MeetingDetailsModal

@@ -9,3 +9,4 @@ export * from './badge';
 export * from './pie-chart';
 export * from './bar-chart';
 export * from './scatter-chart';
+export * from './filters';
