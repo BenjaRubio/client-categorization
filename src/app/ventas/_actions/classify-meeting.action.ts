@@ -16,13 +16,17 @@ export async function classifyMeetingAction(salesMeetingId: string) {
     throw new Error('No se encontró la reunión solicitada.');
   }
 
-  await classifyMeeting({
-    salesMeetingId: meeting.id,
-    clientName: meeting.client.name,
-    meetingDate: meeting.date.toISOString().split('T')[0],
-    transcription: meeting.transcription,
-  });
+  try {
+    await classifyMeeting({
+      salesMeetingId: meeting.id,
+      clientName: meeting.client.name,
+      meetingDate: meeting.date.toISOString().split('T')[0],
+      transcription: meeting.transcription,
+    });
 
-  revalidatePath('/ventas');
-  return { ok: true as const, reason: 'classified' as const };
+    revalidatePath('/ventas');
+    return { ok: true as const, reason: 'classified' as const };
+  } catch (error) {
+    return { ok: false as const, reason: 'error' as const, error: error instanceof Error ? error.message : String(error) };
+  }
 }
