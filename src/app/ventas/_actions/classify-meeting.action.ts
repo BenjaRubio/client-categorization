@@ -25,6 +25,7 @@ export async function classifyMeetingAction(salesMeetingId: string) {
     });
 
     revalidatePath('/ventas');
+    revalidatePath('/metricas');
     return { ok: true as const, reason: 'classified' as const };
   } catch (error) {
     return { ok: false as const, reason: 'error' as const, error: error instanceof Error ? error.message : String(error) };

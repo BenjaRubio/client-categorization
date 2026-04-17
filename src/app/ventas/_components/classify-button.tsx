@@ -29,7 +29,10 @@ export function ClassifyButton({
       size="sm"
       onClick={() =>
         startTransition(async () => {
-          await classifyMeetingAction(salesMeetingId);
+          const result = await classifyMeetingAction(salesMeetingId);
+          if (!result.ok) {
+            console.error(result.error);
+          }
           router.refresh();
         })
       }

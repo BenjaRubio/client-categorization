@@ -195,8 +195,12 @@ export function MeetingsTable({
       for (const m of pendingInView) {
         setBatchActiveMeetingId(m.id);
         try {
-          await classifyMeetingAction(m.id);
-          setOptimisticClassifiedIds((prev) => new Set(prev).add(m.id));
+          const result = await classifyMeetingAction(m.id);
+          if (result.ok) {
+            setOptimisticClassifiedIds((prev) => new Set(prev).add(m.id));
+          } else {
+            console.error(result.error);
+          }
         } catch (error) {
           console.error(error);
         }

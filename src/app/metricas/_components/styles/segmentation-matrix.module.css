@@ -2,6 +2,39 @@
   position: relative;
 }
 
+.toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem 0.75rem;
+  margin-bottom: 0.75rem;
+}
+
+.toolbarLabel {
+  font-size: 1rem;
+  font-weight: 500;
+  color: var(--muted-foreground);
+}
+
+.toggleGroup {
+  display: inline-flex;
+  gap: 0;
+  border-radius: var(--radius);
+  overflow: hidden;
+  border: 1px solid var(--border);
+}
+
+.toggleBtn {
+  font-size: 1rem;
+  border-radius: 0 !important;
+  border: none !important;
+  box-shadow: none !important;
+}
+
+.toggleBtn + .toggleBtn {
+  border-left: 1px solid var(--border) !important;
+}
+
 .tooltip {
   display: flex;
   flex-direction: column;
@@ -31,8 +64,16 @@
 .legend {
   display: flex;
   flex-wrap: wrap;
+  align-items: center;
   gap: 0.75rem;
   margin-top: 0.75rem;
+}
+
+.legendTitle {
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--foreground);
+  margin-right: 0.25rem;
 }
 
 .legendItem {
