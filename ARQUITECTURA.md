@@ -202,6 +202,8 @@ Cruza la dificultad o esfuerzo de la integración de la solicitud del cliente co
 Además se considera el volumen de demanda declarado por el cliente, lo cual se puede asociar al nivel de facturación.
 Por colores también se muestra la estacionalidad de su demanda, ya que aquellos que tienen períodos de alta demanda en fechas específicas, podrían requerir alta urgencia para esas fechas, y si no se atacan rápido podría perderse la oportunidad.
 
+Esta matriz utiliza datos cualitativos, de modo que se utilizo un valor random de dispersión al colocar a cada cliente en el gráfico y poder ver las nubes. Sino quedarían estrictamente uno sobre otro en una grilla de 3x3.
+
 ### Reuniones por vendedor
 
 Gráfico de barras indicando la cantidad de reuniones de cada vendedor, pudiendo discernir entre las cerradas y abiertas. Permitiendo medir eficiencia y resultados.
