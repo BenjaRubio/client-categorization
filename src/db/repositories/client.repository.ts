@@ -20,3 +20,7 @@ export async function create(data: {
 export async function findAll(): Promise<Client[]> {
   return prisma.client.findMany();
 }
+
+export async function countAll(): Promise<number> {
+  return prisma.client.count();
+}

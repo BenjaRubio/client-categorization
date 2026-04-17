@@ -43,3 +43,11 @@ export async function findAllWithDetails() {
     orderBy: { date: 'desc' },
   });
 }
+
+export async function countAll(): Promise<number> {
+  return prisma.salesMeeting.count();
+}
+
+export async function countClosed(): Promise<number> {
+  return prisma.salesMeeting.count({ where: { closed: true } });
+}

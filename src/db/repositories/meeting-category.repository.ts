@@ -32,3 +32,7 @@ export async function findBySalesMeetingId(
 export async function findAll(): Promise<MeetingCategory[]> {
   return prisma.meetingCategory.findMany();
 }
+
+export async function countAll(): Promise<number> {
+  return prisma.meetingCategory.count();
+}

@@ -1,0 +1,61 @@
+.wrapper {
+  position: relative;
+}
+
+.tooltip {
+  display: flex;
+  flex-direction: column;
+  gap: 0.125rem;
+}
+
+.tooltipTitle {
+  margin: 0 0 0.25rem;
+  font-weight: 600;
+  color: var(--foreground);
+}
+
+.tooltipLine {
+  margin: 0;
+  font-size: 0.75rem;
+  color: var(--muted-foreground);
+}
+
+.quadrants {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.5rem;
+  margin-top: 0.75rem;
+  font-size: 0.75rem;
+}
+
+.quadrantOne,
+.quadrantTwo,
+.quadrantThree,
+.quadrantFour {
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 0.5rem;
+  color: var(--muted-foreground);
+  background: rgba(255, 255, 255, 0.015);
+}
+
+.legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  margin-top: 0.75rem;
+}
+
+.legendItem {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+  font-size: 0.75rem;
+  color: var(--muted-foreground);
+}
+
+.legendDot {
+  width: 0.625rem;
+  height: 0.625rem;
+  border-radius: 999px;
+}

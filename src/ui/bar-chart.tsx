@@ -43,17 +43,18 @@ export const BarChart = ({
         <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" />
         <XAxis
           dataKey={categoryKey}
-          tick={{ fill: 'var(--muted-foreground)', fontSize: 12 }}
+          tick={{ fill: 'var(--muted-foreground)', fontSize: '0.875rem' }}
           axisLine={{ stroke: 'var(--border)' }}
           tickLine={false}
         />
         <YAxis
-          tick={{ fill: 'var(--muted-foreground)', fontSize: 12 }}
+          tick={{ fill: 'var(--muted-foreground)', fontSize: '0.875rem' }}
           axisLine={{ stroke: 'var(--border)' }}
           tickLine={false}
           allowDecimals={false}
         />
         <Tooltip
+          cursor={false}
           contentStyle={{
             background: 'var(--card)',
             border: '1px solid var(--border)',
@@ -62,7 +63,7 @@ export const BarChart = ({
         />
         {showLegend && (
           <Legend
-            wrapperStyle={{ fontSize: '0.75rem', color: 'var(--muted-foreground)' }}
+            wrapperStyle={{ fontSize: '0.875rem', color: 'var(--muted-foreground)' }}
           />
         )}
         {bars.map((bar) => (
