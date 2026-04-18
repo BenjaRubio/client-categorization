@@ -31,6 +31,7 @@ import { UseCasePieChart } from './use-case-pie-chart';
 import { IndustryPieChart } from './industry-pie-chart';
 import { SegmentationMatrix } from './segmentation-matrix';
 import { MetricsFiltersDrawer, type ClosedFilter } from './metrics-filters-drawer';
+import { ClientJourneySankey } from './client-journey-sankey';
 import styles from './styles/metrics-dashboard.module.css';
 
 export interface MetricsMeetingRow {
@@ -183,6 +184,18 @@ export function MetricsDashboard({ meetings }: MetricsDashboardProps) {
         </CardHeader>
         <CardContent>
           <SegmentationMatrix meetings={categorizedMeetings} />
+        </CardContent>
+      </Card>
+
+      <Card variant="glass">
+        <CardHeader>
+          <CardTitle>Journey de Clientes</CardTitle>
+          <CardDescription>
+            Flujo desde la industria, pasando por nivel de integración, hasta el cierre de venta.
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <ClientJourneySankey meetings={categorizedMeetings} />
         </CardContent>
       </Card>
 

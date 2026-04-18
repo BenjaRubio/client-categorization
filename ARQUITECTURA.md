@@ -206,6 +206,10 @@ Por cierre se puede analizar qué segmentos de cliente se están atacando más o
 
 Esta matriz utiliza datos cualitativos, de modo que se utilizó un valor random de dispersión al colocar a cada cliente en el gráfico y poder ver las nubes. Sino quedarían estrictamente uno sobre otro en una grilla de 3x3.
 
+### Diagrama de Sankey
+
+Este diagrama muestra el flujo del cliente desde las industrias, el nivel de integración y si se cierra o no la venta, pudiendo explorar las industrias más eficientes, dónde rinde mejor el equipo y tomar decisiones estratégicas.
+
 ### Reuniones por vendedor
 
 Gráfico de barras indicando la cantidad de reuniones de cada vendedor, pudiendo discernir entre las cerradas y abiertas. Permitiendo medir eficiencia y resultados.
